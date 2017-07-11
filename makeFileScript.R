@@ -12,8 +12,8 @@ setwd("/Users/raminfarhanian/projects/R/caseStudyOne")
 cat("working directory is changed to: ", getwd(), "\n")
 
 ## Libraries required
-list.of.packages <- c("repmis", "RCurl", "ggplot2")
-cat("Installing required libraries is missing:", list.of.packages , "\n")
+list.of.packages <- c("repmis", "RCurl", "dplyr", "ggplot2")
+cat("Installing required libraries on demand:", list.of.packages , "\n")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
 cat("Missing libraries installation is complete.", "\n")
@@ -24,12 +24,14 @@ cat("Missing libraries installation is complete.", "\n")
 ## information about the countries with their short names, ranking, and Gross Domestic Product(https://en.wikipedia.org/wiki/Gross_domestic_product). 
 ## We also have additional detailed data of these countries(coming from https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FEDSTATS_Country.csv). It consists  
 ## of name of the countries, the income group, regional information, currency, latest population census, latest household survery, source of most recent income and expenditure data,
-## IMF data dissemination standard, latest trade data, latest water withdrawal data. These two files can help us find a good answer for the following questions: 
-## If we merge the country information by shortcode, how much additional detailed data do we have for 190 countries? 
-# Which country has the lowest 13th ranking? 
-# What are the average GDP rankings for the High income: OECD and High income nonOECD groups?
-# What does the plot of the GDP for all of the countries look like if you use ggplot2 to color your plot by Income Group.
-# If you cut the GDP ranking into 5 separate quantile groups, and make a table versus Income.Group, how many countries are Lower middle income but among the 38 nations with highest GDP?
+## IMF data dissemination standard, latest trade data, latest water withdrawal data. These two files can help us find good answers for the following questions.
+
+##Questions
+## 1- If we merge the country information by countryCode, how much additional detailed data do we have for 190 countries? 
+## 2-Which country has the lowest 13th ranking? 
+## 3-What are the average GDP rankings for the High income: OECD and High income nonOECD groups?
+#  4-What does the plot of the GDP for all of the countries look like if you use ggplot2 to color your plot by Income Group.
+#  5-If you cut the GDP ranking into 5 separate quantile groups, and make a table versus Income.Group, how many countries are Lower middle income but among the 38 nations with highest GDP?
 
 
 ## Part 2: Downloading required files
@@ -38,34 +40,37 @@ cat("Downloading GDP file:", "\n")
 source("downloadGdpFile.R")
 cat("GDP File is downloaded successfully.", "\n")
 
-## Part 2-2: Downloading Educational data file
-cat("Downloading Educational data file:", "\n")
-source("downloadCountryFile.R")
-cat("Educational data file is downloaded successfully.", "\n")
+## Part 2-2: Downloading Detail data file
+cat("Downloading Detailed data file:", "\n")
+source("downloadDetailFile.R")
+cat("Detail data file is downloaded successfully.", "\n")
 
 
 # Part 3: Reading and cleaning the data
 # After doing an initial review, I figured that some clean ups have to be made before merging process. 
 #GDP data
-# The header data is not correct and must be cleaned up
-# Empty lines should be skipped.
+# The first few lines are empty and contain invalid data.
+# The header data is not correct and must be cleaned up.
+# Empty and invalid lines should be skipped.
 # GDP values in some lines should be trimmed.
 # The lines after TUV (country ranked 190) are invalid. These lines are in six categories:
 # 1-Lines missing Gross Domestic Product value(line 197 to 220 in the original file).
-# 2-Some lines are empty(line 196, 221, 223, 237)
+# 2-Some lines are empty or invalid (line 1, 2, 3, 4, 196, 221, 223, 237)
 # 3-Some lines comprise information about a region and not a country
 # 4-The GDP value of many lines should be trimmed.
 # 5-Some lines have an additonal column (lines 67, 78, 100, 102, 119, 146)
-# 6-Line 104 country information(Ivory Coast) is in French, and should be replaced with English.
+# 6-Line 104 country information(Ivory Coast) is in French, and later I might need to replace it. But for now, I read the file in UTF-8 to avoid Internationalization issues.
+# The data can be cleansed by changing header values, and removing lines with empty rankings, country code along with invalid columns.
+# The ranking data should be transformed into Numeric to trim the empty spaces around some ranking values.
 
-gdpData_content= read.csv(file =  "./datasets/fgdp.csv", header=TRUE, sep=",",fill = TRUE, quote = "\"", skipNul=TRUE, encoding = "UTF-8")
-colnames(gdpData_content)<- c("ShortName", "Ranking", "", "Country", "GDP", "Wrong")
-gdpData_cleansed <- subset(gdpData_content, select = c("ShortName", "Ranking", "GDP"),  ShortName!="" & Ranking!="")
+gdpData_original= read.csv(file =  gdpData_destination , header=TRUE, sep=",",fill = TRUE, quote = "\"", skipNul=TRUE, encoding = "UTF-8")
+colnames(gdpData_original)<- c("CountryCode", "Ranking", "", "Country", "GDP", "removeableColumn")
+gdpData_cleansed <- subset(gdpData_original, select = c("CountryCode", "Ranking", "GDP"),  CountryCode!="" & Ranking!="")
 gdpData_cleansed$Ranking <- as.numeric(as.character(gdpData_cleansed$Ranking))
-gdpData_cleansed <- gdpData_cleansed[order(-gdpData_cleansed$Ranking),] 
 
-# Country data file
-# Country data file contains invalid country information that should be cleaned up. The invalid lines are in two categories: 
+
+# Detail data file
+# Detail data file contains invalid detail information that should be cleansed. The invalid lines are in two categories: 
 # 1-The lines that contain regional information. 
 # Lines 55(East Asia & Pacific) to 58("Europe & Central Asia"), 113(Latin America & Caribbean), 
 # 119(Latin America & Caribbean (all income levels)),  136(middle east), 139(Middle Income), 144(Middle East and North Africa), 153(North America), 
@@ -74,15 +79,26 @@ gdpData_cleansed <- gdpData_cleansed[order(-gdpData_cleansed$Ranking),]
 # Line 85(High income), 88(Heavily indebted poor countries)  
 # 120(Least developed countries: UN classification), 121(Low income), 124(Lower middle income), 125(Low & middle income), 160(High income: nonOECD),
 # 164(High income: OECD), 218(Upper middle income)
-
-#dat <- readLines("./datasets/countryData.csv", n = 5)
-#tt <- gsub("\\\\","\\",dat)
-#zz <- textConnection(tt)
-#myData <- read.csv(zz,header=TRUE,quote="\"")
-#close(zz)
+# They can be cleanse using "Income.Group" as invalid countries have no value for income group.
 
 countryData_content= read.csv(file = "./datasets/countryData.csv", header=TRUE, sep=",", fill = TRUE, quote = "\"", skipNul=TRUE)
-print(countryData_content)
+head(countryData_content)
+colnames(countryData_content)
+countryData_cleansed <- subset(countryData_content,  Income.Group!="")
+
+
+# Part 4: Merging the data by country short code
+# If we merge the country information by countryCode, how much additional detailed data do we have for 190 countries? 
+mergeResult<-merge(gdpData_cleansed,countryData_content, by="CountryCode")
+firstAnswer<-NROW(mergeResult)
+cat("If we merge the country information by countryCode, how much additional detailed data do we have for 190 countries?" , firstAnswer, "\n")
+
+#Part 5: Sorting the data
+# Which country has the lowest 13th ranking? St. Kitts and Nevis
+sortedMergeResult <- mergeResult[order(-mergeResult$Ranking),]
+thirteenLowestGdpCountry<- as.character(sortedMergeResult$Long.Name[[13]])
+cat("Which country has the lowest 13th ranking?  ",thirteenLowestGdpCountry, "\n")
+
 
 
 
