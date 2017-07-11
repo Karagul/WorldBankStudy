@@ -50,11 +50,25 @@ cat("Educational data file is downloaded successfully.", "\n")
 # The header data is not correct and must be cleaned up
 # Empty lines should be skipped.
 # GDP values in some lines should be trimmed.
-# The lines after TUV (country ranked 190) are invalid. These lines are in three categories:
+# The lines after TUV (country ranked 190) are invalid. These lines are in six categories:
 # 1-Lines missing Gross Domestic Product value(line 197 to 220 in the original file).
 # 2-Some lines are empty(line 196, 221, 223, 237)
 # 3-Some lines comprise information about a region and not a country
+# 4-The GDP value of many lines should be trimmed.
+# 5-Some lines have an additonal column (lines 67, 78, 100, 102, 119, 146)
+# 6-Line 104 country information(Ivory Coast) is in French, and should be replaced with English.
+gdpData_content= read.csv(file =  "./datasets/fgdp.csv", header=TRUE, sep=",",fill = TRUE, quote = "\"", skipNul=TRUE, encoding = "UTF-8")
+colnames(gdpData_content)<- c("ShortName", "Ranking", "", "Country", "GDP", "Wrong")
+gdpData_cleansed1 <- subset(gdpData_content, select = c("ShortName", "Ranking", "GDP"))
+gdpData_cleansed2 <-subset(gdpData_cleansed1, ShortName!="" & Ranking!="")
+#d$rate <- as.numeric(as.character(d$rate)
+#d1 <- d[order(d$rate, d$hospital),]
+gdpData_cleansed2$Ranking <- as.numeric(as.character(gdpData_cleansed2$Ranking))
+gdpData_Cleansed2 <- gdpData_cleansed2[order(-gdpData_cleansed2$Ranking),] 
 
+#gdpData_sortedAscending <-gdpData_cleansed3[order(gdpData_cleansed2$Ranking),]
+#gdpData_cleansed2 <- subset(x=gdpData_select, subset = (!is.na(Ranking) | !is.na(GDP)))
+#gdpData_cleansed3 <- subset(x=gdpData_select, subset = (Ranking!="NA"))
 # Country data file
 # Country data file contains invalid country information that should be cleaned up. The invalid lines are in two categories: 
 # 1-The lines that contain regional information. 
@@ -71,8 +85,6 @@ cat("Educational data file is downloaded successfully.", "\n")
 #zz <- textConnection(tt)
 #myData <- read.csv(zz,header=TRUE,quote="\"")
 #close(zz)
-
-gdpData_content= read.csv(file =  "./datasets/fgdp.csv", header=TRUE, sep=",",fill = TRUE, quote = "", skipNul=TRUE)
 
 countryData_content= read.csv(file = "./datasets/countryData.csv", header=TRUE, sep=",", fill = TRUE, quote = "\"", skipNul=TRUE)
 print(countryData_content)
