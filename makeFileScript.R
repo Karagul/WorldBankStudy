@@ -57,18 +57,13 @@ cat("Educational data file is downloaded successfully.", "\n")
 # 4-The GDP value of many lines should be trimmed.
 # 5-Some lines have an additonal column (lines 67, 78, 100, 102, 119, 146)
 # 6-Line 104 country information(Ivory Coast) is in French, and should be replaced with English.
+
 gdpData_content= read.csv(file =  "./datasets/fgdp.csv", header=TRUE, sep=",",fill = TRUE, quote = "\"", skipNul=TRUE, encoding = "UTF-8")
 colnames(gdpData_content)<- c("ShortName", "Ranking", "", "Country", "GDP", "Wrong")
-gdpData_cleansed1 <- subset(gdpData_content, select = c("ShortName", "Ranking", "GDP"))
-gdpData_cleansed2 <-subset(gdpData_cleansed1, ShortName!="" & Ranking!="")
-#d$rate <- as.numeric(as.character(d$rate)
-#d1 <- d[order(d$rate, d$hospital),]
-gdpData_cleansed2$Ranking <- as.numeric(as.character(gdpData_cleansed2$Ranking))
-gdpData_Cleansed2 <- gdpData_cleansed2[order(-gdpData_cleansed2$Ranking),] 
+gdpData_cleansed <- subset(gdpData_content, select = c("ShortName", "Ranking", "GDP"),  ShortName!="" & Ranking!="")
+gdpData_cleansed$Ranking <- as.numeric(as.character(gdpData_cleansed$Ranking))
+gdpData_cleansed <- gdpData_cleansed[order(-gdpData_cleansed$Ranking),] 
 
-#gdpData_sortedAscending <-gdpData_cleansed3[order(gdpData_cleansed2$Ranking),]
-#gdpData_cleansed2 <- subset(x=gdpData_select, subset = (!is.na(Ranking) | !is.na(GDP)))
-#gdpData_cleansed3 <- subset(x=gdpData_select, subset = (Ranking!="NA"))
 # Country data file
 # Country data file contains invalid country information that should be cleaned up. The invalid lines are in two categories: 
 # 1-The lines that contain regional information. 
