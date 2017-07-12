@@ -91,14 +91,23 @@ countryData_cleansed <- subset(countryData_content,  Income.Group!="")
 # If we merge the country information by countryCode, how much additional detailed data do we have for 190 countries? 
 mergeResult<-merge(gdpData_cleansed,countryData_content, by="CountryCode")
 firstAnswer<-NROW(mergeResult)
-cat("If we merge the country information by countryCode, how much additional detailed data do we have for 190 countries?" , firstAnswer, "\n")
+cat("Question 1: If we merge the country information by countryCode, how much additional detailed data do we have for 190 countries?" , firstAnswer, "\n")
 
 #Part 5: Sorting the data
-# Which country has the lowest 13th ranking? St. Kitts and Nevis
+# Which country has the lowest 13th ranking?
 sortedMergeResult <- mergeResult[order(-mergeResult$Ranking),]
 thirteenLowestGdpCountry<- as.character(sortedMergeResult$Long.Name[[13]])
-cat("Which country has the lowest 13th ranking?  ",thirteenLowestGdpCountry, "\n")
+cat("Question 2: Which country has the lowest 13th ranking?  ",thirteenLowestGdpCountry, "\n")
 
 
+#Part 6: the average GDP rankings for the "High income: OECD" and "High income: nonOECD" groups
+source("IncomeGroupAverageRanking.R")
+cat("Question 3-1: What is the average GDP rankings for the High income: OECD? ", incomeGroupAverageRanking("High income: OECD"), "\n")
+cat("Question 3-2: The average GDP rankings for the High income: nonOECD is :", incomeGroupAverageRanking("High income: nonOECD"), "\n")
 
+
+#Part 7 : GGPlot
+# The plot of the GDP for all of the countries using ggplot2 to color your plot by Income Group.
+#ggplot(mergeResult,aes=(mergeResult$Income.Group))
+  
 
