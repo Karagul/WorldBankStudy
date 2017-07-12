@@ -67,6 +67,7 @@ gdpData_original= read.csv(file =  gdpData_destination , header=TRUE, sep=",",fi
 colnames(gdpData_original)<- c("CountryCode", "Ranking", "", "Country", "GDP", "removeableColumn")
 gdpData_cleansed <- subset(gdpData_original, select = c("CountryCode", "Ranking", "GDP"),  CountryCode!="" & Ranking!="")
 gdpData_cleansed$Ranking <- as.numeric(as.character(gdpData_cleansed$Ranking))
+gdpData_cleansed$GDP<- as.numeric(gdpData_cleansed$GDP)
 
 
 # Detail data file
@@ -108,6 +109,18 @@ cat("Question 3-2: The average GDP rankings for the High income: nonOECD is :", 
 
 #Part 7 : GGPlot
 # The plot of the GDP for all of the countries using ggplot2 to color your plot by Income Group.
-#ggplot(mergeResult,aes=(mergeResult$Income.Group))
-  
-
+library(ggplot2)
+library(scales)
+#ggplot(data=mergeResult, aes(mergeResult$GDP))+ geom_density(aes(fill = factor(cyl))) + xlab("\n X") + ylab("Y \n") + theme_bw()  
+#myFunc<-function(x) { return (x/1000)}
+subsetData <-subset(mergeResult, Income.Group == "High income: OECD")
+data<-mergeResult
+#data$GDP<- as.numeric(data$GDP)/ 1
+Country<-data$Ranking
+GDP<-data$GDP
+IncomeGroup<-data$Income.Group
+#ggbar<- ggplot(data, aes(x=Country, y=GDP)) + geom_bar(stat = "identity", aes(fill=IncomeGroup)) + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+#print(ggbar)
+gg <- ggplot(data, aes(x=Country, y=GDP,color=IncomeGroup)) + theme(axis.text.x =  element_blank(), axis.ticks = element_blank())
+gg<-gg + geom_point()
+print(gg)
