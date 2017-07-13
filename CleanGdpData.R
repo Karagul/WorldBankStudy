@@ -1,5 +1,5 @@
 readGdpData <- function() {
-  originalData= read.csv(file =  "./datasets/fgdp.csv" , header=TRUE, sep=",",fill = TRUE, quote = "\"", skipNul=TRUE, encoding = "UTF-8")
+  originalData= read.csv(file =  "./fgdp.csv" , header=TRUE, sep=",",fill = TRUE, quote = "\"", skipNul=TRUE, encoding = "UTF-8")
   return (originalData) 
 }
 

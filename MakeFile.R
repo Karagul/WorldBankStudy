@@ -8,7 +8,7 @@
 
 ##Setting working directory
 cat("Changing working directory.\nCurrent working directory: ", getwd(), "\n")
-setwd("/Users/raminfarhanian/projects/R/caseStudyOne")
+setwd("/Users/raminfarhanian/projects/R/WorldBankStudy")
 cat("working directory is changed to: ", getwd(), "\n")
 
 ## Libraries required

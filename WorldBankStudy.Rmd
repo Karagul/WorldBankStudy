@@ -53,7 +53,7 @@ date: "July 13, 2017"
 # Setting working directory
 
 ```{r}
-setwd("/Users/raminfarhanian/projects/R/caseStudyOne")
+setwd("/Users/raminfarhanian/projects/R/WorldBankStudy")
 
 ```
 

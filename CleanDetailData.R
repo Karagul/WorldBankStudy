@@ -1,5 +1,5 @@
 readDetailedData <- function() {
-  originalData= read.csv(file = "./datasets/countryData.csv", header=TRUE, sep=",", fill = TRUE, quote = "\"", skipNul=TRUE)
+  originalData= read.csv(file = "./countryData.csv", header=TRUE, sep=",", fill = TRUE, quote = "\"", skipNul=TRUE)
   return (originalData) 
 }
 
