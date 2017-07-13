@@ -1,11 +1,6 @@
----
-title: "World Bank Study"
-author: "Ramin Farhanian"
-date: "July 13, 2017"
-output: 
-  html_document:
-    keep_md: true
----
+# World Bank Study
+Ramin Farhanian  
+July 13, 2017  
 # Introduction
  World bank has released the information about 190 countries in two files. We would like to analyze these files and extract some information about some countries.
  
@@ -55,14 +50,15 @@ output:
 
 # Setting working directory
 
-```{r}
-setwd("/Users/raminfarhanian/projects/R/WorldBankStudy")
 
+```r
+setwd("/Users/raminfarhanian/projects/R/WorldBankStudy")
 ```
 
 # Required Packages
 The required packages should be installed once before the rest of the code executes. 
-```{r}
+
+```r
 installLibrariesOnDemand <- function (packages)
 {
   cat("Installing required libraries on demand:", packages , "\n")
@@ -73,17 +69,31 @@ installLibrariesOnDemand <- function (packages)
 installLibrariesOnDemand(c("repmis", "RCurl", "tidyr", "ggplot2"))
 ```
 
+```
+## Installing required libraries on demand: repmis RCurl tidyr ggplot2 
+## Missing libraries installation is complete.
+```
+
 # Downloading FGDP file
 
-```{r}
+
+```r
 library(repmis)
 library(RCurl)
+```
+
+```
+## Loading required package: bitops
+```
+
+```r
 download.file(url = "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FGDP.csv", destfile = "./fgdp.csv")
 ```
 
 # Downloading Detail data file
 
-```{r}
+
+```r
 library(repmis)
 library(RCurl)
 download.file(url = "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FEDSTATS_Country.csv", destfile = "./countryData.csv")
@@ -103,7 +113,8 @@ Invalid lines are in seven categories:
  6. Line 104 country information(Ivory Coast) is in French. The file should be read in UTF-8 to avoid Internationalization issues.
  7. The ranking data should be transformed into Numeric.
  
-```{r}
+
+```r
 readGdpData <- function() {
   originalData= read.csv(file =  "./fgdp.csv" , header=TRUE, sep=",",fill = TRUE, quote = "\"", skipNul=TRUE, encoding = "UTF-8")
   return (originalData) 
@@ -131,7 +142,8 @@ Detail data contains invalid detail information that should be cleansed. The inv
 
 They can be cleanse using "Income.Group" as invalid countries have no value for income group.
 
-```{r}
+
+```r
 readDetailedData <- function() {
   originalData= read.csv(file = "./countryData.csv", header=TRUE, sep=",", fill = TRUE, quote = "\"", skipNul=TRUE)
   return (originalData) 
@@ -150,15 +162,21 @@ detailData<-cleanDetailData()
 # Merging the data by country short code
 If we merge the country information by countryCode, how much additional detailed data do we have for 190 countries? The answer is 189.
 
-```{r}
+
+```r
 mergeResult<-merge(gdpData,detailData, by="CountryCode")
 firstAnswer<-NROW(mergeResult)
 cat("Question 1: If we merge the country information by countryCode, how much additional detailed data do we have for 190 countries?" , firstAnswer, "\n")
 ```
 
+```
+## Question 1: If we merge the country information by countryCode, how much additional detailed data do we have for 190 countries? 189
+```
+
 # Sorting the data
 Which country has the lowest 13th ranking? St. Kitts and Nevis.
-```{r}
+
+```r
 getRanking<-function(data, rankIndex){
   sortedData <- data[order(-data$Ranking),]
   return (as.character(sortedData$Long.Name[[rankIndex]]))
@@ -166,21 +184,38 @@ getRanking<-function(data, rankIndex){
 cat("Question 2: Which country has the lowest 13th ranking?  ", getRanking(mergeResult, 13), "\n")
 ```
 
+```
+## Question 2: Which country has the lowest 13th ranking?   St. Kitts and Nevis
+```
+
 
 # The average GDP rankings for the "High income: OECD" and "High income: nonOECD" groups
 The average GDP ranking for the "High income: OECD" is  33, and for "High income: nonOECD" is 92.
-```{r}
+
+```r
 getIncomeGroupAverageRanking<-function(incomeGroupName){
   subsetData <-subset(mergeResult, Income.Group == incomeGroupName)
   return (ceiling(mean(as.numeric(subsetData$Ranking))))
 }
 cat("Question 3-1: What is the average GDP rankings for the High income: OECD? ", getIncomeGroupAverageRanking("High income: OECD"), "\n")
+```
+
+```
+## Question 3-1: What is the average GDP rankings for the High income: OECD?  33
+```
+
+```r
 cat("Question 3-2: What is the average GDP rankings for the High income: nonOECD?", getIncomeGroupAverageRanking("High income: nonOECD"), "\n")
+```
+
+```
+## Question 3-2: What is the average GDP rankings for the High income: nonOECD? 92
 ```
 
 # GDP GGPlot
 The plot of the GDP for all of the countries using ggplot2 to color your plot by Income Group.
-```{r}
+
+```r
 library(ggplot2)
 library(scales)
 getGdpGgPlot<-function()
@@ -198,16 +233,37 @@ return (gg)
 print(getGdpGgPlot())
 ```
 
+![](WorldBankStudy_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
+
 # 38 Richest Lower Middle Income Countries
 If you cut the GDP ranking into 5 separate quantile groups, and make a table versus Income.Group, how many countries are Lower middle income but among the 38 nations with highest GDP? The answer is 5.
-```{r}
+
+```r
 library(tidyr)
+```
+
+```
+## 
+## Attaching package: 'tidyr'
+```
+
+```
+## The following object is masked from 'package:RCurl':
+## 
+##     complete
+```
+
+```r
 getNumberOfRichestLowerMiddleIncome <- function(data) {
   spreadResult<-spread(data, key = Income.Group, value = GDP)
   queryResult <-subset(spreadResult, !is.na(spreadResult$`Lower middle income`) & spreadResult$Ranking< 39)
   return (NROW(queryResult))
 }
 cat("Question 5: how many countries are Lower middle income but among the 38 nations with highest GDP?", getNumberOfRichestLowerMiddleIncome(mergeResult))
+```
+
+```
+## Question 5: how many countries are Lower middle income but among the 38 nations with highest GDP? 5
 ```
 
 # Conclusion
