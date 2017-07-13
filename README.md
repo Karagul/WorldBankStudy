@@ -1,4 +1,4 @@
-# World Bank Information Analysis 
+# World Bank Study
 
 # Author: Ramin Farhanian
 
