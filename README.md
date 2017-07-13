@@ -33,7 +33,7 @@ b. The introduction needs to be written as if you are presenting the work to som
 
 c. Brief explanations of the purpose of the code. The explanations should appear as a sentence or two before or after the code chunk. Even though you will not be hiding the code chunks (so that I can see the code), you need to pretend that the client cant see them.
 
-d. Code to answer the seven questions above (plus the answers) in the same R Markdown file.
+d. Code to answer the five questions above (plus the answers) in the same R Markdown file.
 
 e. Clear answers to the questions. Just the code to answer the questions is not enough, even if the code is correct and gives the correct answer. You must state the answer in a complete sentence outside the code chunk.
 
