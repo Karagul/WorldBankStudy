@@ -4,7 +4,7 @@
 # Updated 13 July 2017
 ################
 
-## Introduction to Case Study 1 project
+## Introduction to World Bank Study
 
 ##Setting working directory
 cat("Changing working directory.\nCurrent working directory: ", getwd(), "\n")
@@ -12,15 +12,19 @@ setwd("/Users/raminfarhanian/projects/R/caseStudyOne")
 cat("working directory is changed to: ", getwd(), "\n")
 
 ## Libraries required
-list.of.packages <- c("repmis", "RCurl", "tidyr", "ggplot2")
-cat("Installing required libraries on demand:", list.of.packages , "\n")
-new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
-if(length(new.packages)) install.packages(new.packages)
-cat("Missing libraries installation is complete.", "\n")
+
+installLibrariesOnDemand <- function (packages)
+{
+  cat("Installing required libraries on demand:", packages , "\n")
+  new.packages <- packages[!(packages %in% installed.packages()[,"Package"])]
+  if(length(new.packages)) install.packages(new.packages)
+  cat("Missing libraries installation is complete.", "\n")
+}
+installLibrariesOnDemand(c("repmis", "RCurl", "tidyr", "ggplot2"))
 
 ## Part 1: Introduction to the problem
 ## World bank has released the information about 190 countries in two files. The first file contains the data of Gross Domestic Product data for the 190 ranked countries 
-## (coming from https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FGDP.csv). It has 
+## (https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FGDP.csv). It has 
 ## information about the countries with their short names, ranking, and Gross Domestic Product(https://en.wikipedia.org/wiki/Gross_domestic_product). 
 ## We also have additional detail data of these countries(coming from https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FEDSTATS_Country.csv). It consists  
 ## of name of the countries, the income group, regional information, currency, latest population census, latest household survery, source of most recent income and expenditure data,
