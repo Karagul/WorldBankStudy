@@ -145,7 +145,7 @@ detailData<-cleanDetailData()
 ```
 
 # Merging the data by country short code
-If we merge the country information by countryCode, how much additional detailed data do we have for 190 countries? 
+If we merge the country information by countryCode, how much additional detailed data do we have for 190 countries? The answer is 189.
 
 ```{r}
 mergeResult<-merge(gdpData,detailData, by="CountryCode")
@@ -154,7 +154,7 @@ cat("Question 1: If we merge the country information by countryCode, how much ad
 ```
 
 # Sorting the data
-Which country has the lowest 13th ranking?
+Which country has the lowest 13th ranking? St. Kitts and Nevis.
 ```{r}
 getRanking<-function(data, rankIndex){
   sortedData <- data[order(-data$Ranking),]
@@ -165,6 +165,7 @@ cat("Question 2: Which country has the lowest 13th ranking?  ", getRanking(merge
 
 
 # The average GDP rankings for the "High income: OECD" and "High income: nonOECD" groups
+The average GDP ranking for the "High income: OECD" is  33, and for "High income: nonOECD" is 92.
 ```{r}
 getIncomeGroupAverageRanking<-function(incomeGroupName){
   subsetData <-subset(mergeResult, Income.Group == incomeGroupName)
@@ -195,7 +196,7 @@ print(getGdpGgPlot())
 ```
 
 # 38 Richest Lower Middle Income Countries
-If you cut the GDP ranking into 5 separate quantile groups, and make a table versus Income.Group, how many countries are Lower middle income but among the 38 nations with highest GDP?
+If you cut the GDP ranking into 5 separate quantile groups, and make a table versus Income.Group, how many countries are Lower middle income but among the 38 nations with highest GDP? The answer is 5.
 ```{r}
 library(tidyr)
 getNumberOfRichestLowerMiddleIncome <- function(data) {
